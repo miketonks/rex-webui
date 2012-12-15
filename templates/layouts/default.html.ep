@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<title>Rex - WebUI</title>
+		<link rel="stylesheet" href="/css/layout.css" type="text/css" media="screen" charset="utf-8" />      
+	</head>
+   <body>
+		<div id="header">
+			<a href="/"><img id="title_img" src="/images/rex_title.png"></a>
+		</div>
+		<div id="content_area"><%= content %></div>
+		<div id="footer">
+			<div id="mojo_credit"><a href="http://http://mojolicio.us"><img src="/images/mojolicious.png" alt="Mojolicious" title="Powered by Mojolicious"></a></div>
+			<div id="rexify_credit"><a href="http://rexify.org">(R)?ex - A simple framework to simplify system administration and datacenter automation</a></div>
+		</div>
+	</body>
+</html>

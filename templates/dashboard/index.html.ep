@@ -1,0 +1,12 @@
+% layout 'default';
+
+<h1>Dashboard</h1>
+
+Tasks Available: 
+
+<ul>
+% for my $task (@$tasks) {
+	<li><a href=""><%= $task %></a></li>
+% }
+</ul>
+	
