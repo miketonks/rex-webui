@@ -1,12 +1,19 @@
 % layout 'default';
 
-<h1>Dashboard</h1>
+<h1><%= $name %> - Dashboard</h1>
 
+<div id="rexfile_info">
+Rexfile Loaded: <%= $rexfile %>
+</div>
+
+<br />
+
+<div id="task_info">
 Tasks Available: 
 
 <ul>
 % for my $task (@$tasks) {
-	<li><a href=""><%= $task %></a></li>
+	<li><a href="/task/<%= $task->{name} %>"><%= $task->{name} %> : <%= $task->{desc} %></a></li>
 % }
 </ul>
-	
+</div>

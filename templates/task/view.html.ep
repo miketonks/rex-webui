@@ -1,0 +1,17 @@
+% layout 'default';
+
+<h1>Task Details: <%= $task->{name} %></h1>
+
+<div id="task_info">
+Description: <%= $task->{desc} %>
+</div>
+
+<br />
+
+<div id="task_actions">
+Actions Available: 
+
+<ul>
+	<li><a href="">Run Now</a></li>
+</ul>
+</div>

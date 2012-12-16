@@ -1,0 +1,13 @@
+ 
+ # Sample Rexfile
+ 
+ desc "Show Unix version";
+ task "uname", sub {
+     say run "uname -a";
+ };
+ 
+ desc "Show Uptime";
+ task "uptime", sub {
+     say run "uptime";
+ };
+ 

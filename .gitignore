@@ -1,3 +1,5 @@
+.project
+.includepath
 blib/
 .build/
 _build/
