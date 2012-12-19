@@ -118,13 +118,14 @@ sub run_ws
 
 			foreach my $log_line (@$log_lines) {
 
+				warn "LOG: $log_line";
 				$_[0]->send($log_line);
 			}
 
 			if ($status =~ /^done/) {
 				$_[0]->send("STATUS: $status [$i]");
-				unlink $temp_logfile;
-				unlink $temp_status_file;
+				#unlink $temp_logfile;
+				#unlink $temp_status_file;
 			} else
 			{
 				$_[0]->send("STATUS: $status [$i]", $cb);
@@ -226,8 +227,9 @@ sub _read_log
 		my @lines = <FILE>;
 
 		$total_lines = scalar @lines;
+warn "LINES: $total_lines [$log_position]";
 
-		if ($total_lines > $log_position) {
+		if ($total_lines >= $log_position) {
 
 			foreach my $i ($log_position .. $total_lines) {
 

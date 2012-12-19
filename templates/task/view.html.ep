@@ -31,7 +31,13 @@ Actions Available:
 	<li><a onclick="open_websocket();">Test Websocket</a></li>
 </ul>
 
+<div id="progress" style="display: none;" >
+
+<img id="status_icon" src="/images/working.gif" style="float: right;" />
+
 <div style="margin: 20px; border: 1px solid black; background: #222; color: white; padding: 10px; width: 60%; height: 200px; overflow-y: scroll;" id="log_panel"></div>
+
+</div>
 
 </div>
 
@@ -39,6 +45,8 @@ Actions Available:
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 function open_websocket() {
+
+	$('#progress').show();
 
     var ws = new (WebSocket || MozWebSocket)('ws://localhost:3000/task/run_ws/<%= $task->{name} %>');
     var timer_id;
@@ -53,20 +61,37 @@ function open_websocket() {
       );
     };
     ws.onmessage = function(msg) {
+      if (msg.data.match(/^STATUS: done/)) {
+      	console.log('STATUS DONE >> ' + msg.data);
+      	$('#status_icon').attr('src', '/images/ok.png');
+      	return;
+      }
+
       if (msg.data.match(/^STATUS/)) {
       	console.log('STATUS >> ' + msg.data);
       	return;
       }
 
-      if (msg.data == '\n' && $('pre:last').text() == '\n') return;
-      $('<pre>').text(msg.data).appendTo('div#log_panel');
+	  var color = 'white';
 
-      var log_panel = document.getElementById('log_panel');
+	  if (msg.data.match(/] INFO /)) {
+	  	color = 'green';
+	  }
+	  else if (msg.data.match(/] WARN /)) {
+	  	color = 'yellow';
+	  }
+	  else if (msg.data.match(/] ERROR /)) {
+	  	color = 'red';
+	  }
+      if (msg.data == '\n' && $('pre:last').text() == '\n') return;
+      $('<pre style="color: ' + color + '">').text(msg.data).appendTo('div#log_panel');
+
+      var log_panel = $('#log_panel');
 
       //log_panel.scrollTop(log_panel.scrollHeight);
       log_panel.scrollTop = log_panel.scrollHeight;
 
-      console.log('DATA: '+ msg.data);
+      console.log('DATA: '+ msg.data + '[' + color + ']');
     };
     ws.onclose = function() {
       console.warn('Connection closed');
