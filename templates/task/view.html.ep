@@ -3,15 +3,77 @@
 <h1>Task Details: <%= $task->{name} %></h1>
 
 <div id="task_info">
-Description: <%= $task->{desc} %>
+
+<table>
+	<tr>
+		<th>Description: </th>
+		<td><%= $task->{desc} %></td>
+	</tr>
+	<tr>
+		<th>Server: </th>
+		<td>
+% for my $server (@{$task->{server}}) {
+			<%= $server->{name} %>&nbsp;
+% }
+		</td>
+	</tr>
+</table>
+
 </div>
 
 <br />
 
 <div id="task_actions">
-Actions Available: 
+Actions Available:
 
 <ul>
-	<li><a href="">Run Now</a></li>
+	<li><a href="/task/run/<%= $task->{name} %>">Run Now</a></li>
+	<li><a onclick="open_websocket();">Test Websocket</a></li>
 </ul>
+
+<div style="margin: 20px; border: 1px solid black; background: #222; color: white; padding: 10px; width: 60%; height: 200px; overflow-y: scroll;" id="log_panel"></div>
+
 </div>
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+function open_websocket() {
+
+    var ws = new (WebSocket || MozWebSocket)('ws://localhost:3000/task/run_ws/<%= $task->{name} %>');
+    var timer_id;
+    ws.onopen = function() {
+      console.log('Connection opened');
+      timer_id = setInterval(
+        function() {
+          console.log('Connection keepalive');
+          ws.send('keepalive');
+        },
+        1000 * 240
+      );
+    };
+    ws.onmessage = function(msg) {
+      if (msg.data.match(/^STATUS/)) {
+      	console.log('STATUS >> ' + msg.data);
+      	return;
+      }
+
+      if (msg.data == '\n' && $('pre:last').text() == '\n') return;
+      $('<pre>').text(msg.data).appendTo('div#log_panel');
+
+      var log_panel = document.getElementById('log_panel');
+
+      //log_panel.scrollTop(log_panel.scrollHeight);
+      log_panel.scrollTop = log_panel.scrollHeight;
+
+      console.log('DATA: '+ msg.data);
+    };
+    ws.onclose = function() {
+      console.warn('Connection closed');
+      clearInterval(timer_id);
+    };
+    ws.onerror = function(msg) {
+      console.error(msg.data);
+    };
+}
+</script>

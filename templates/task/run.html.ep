@@ -1,0 +1,20 @@
+% layout 'default';
+
+<h1>Task Details: <%= $task->{name} %></h1>
+
+<div id="task_info">
+Description: <%= $task->{desc} %>
+</div>
+
+<br />
+
+<div id="task_result">
+Result: [<%= $result %>]
+
+<br /><br />
+
+% for my $line (@$log) {
+	<%= $line %><br />
+% }
+
+</div>
