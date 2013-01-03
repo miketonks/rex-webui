@@ -226,7 +226,6 @@ sub _read_log
 		my @lines = <FILE>;
 
 		$total_lines = scalar @lines;
-warn "LINES: $total_lines [$log_position]";
 
 		if ($total_lines >= $log_position) {
 
