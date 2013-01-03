@@ -51,7 +51,7 @@ sub startup {
 	$r->get("/dashboard")->to("dashboard#view");
 	$r->get("/task/view/:name")->to("task#view");
 	$r->get("/task/run/:name")->to("task#run");
-	$r->get("/task/stream/:id")->to("task#stream");
+#	$r->get("/task/stream/:id")->to("task#stream");
 	$r->websocket("/task/run_ws/:name")->to("task#run_ws");
 }
 

@@ -4,6 +4,8 @@
 
 <div id="task_info">
 
+<img src="/images/task_128.png" style="float: right;" />
+
 <table>
 	<tr>
 		<th>Description: </th>
@@ -27,13 +29,12 @@
 Actions Available:
 
 <ul>
-	<li><a href="/task/run/<%= $task->{name} %>">Run Now</a></li>
-	<li><a onclick="open_websocket();">Test Websocket</a></li>
+	<li><a onclick="open_websocket();">Run Now [ with websockets ]</a>  &nbsp;  <a href="/task/run/<%= $task->{name} %>"><i>[ no websockets ]</i></a></li>
 </ul>
 
 <div id="progress" style="display: none;" >
 
-<img id="status_icon" src="/images/working.gif" style="float: right;" />
+<img id="status_icon" src="/images/working.gif" style="float: right; padding: 0px 32px;" />
 
 <div style="margin: 20px; border: 1px solid black; background: #222; color: white; padding: 10px; width: 60%; height: 200px; overflow-y: scroll;" id="log_panel"></div>
 

@@ -48,27 +48,27 @@ sub run
 }
 
 # just a test method to explore mojo streaming
-sub stream
-{
-    my $self = shift;
-
-	$self->render_later;
-
-    # Start recurring timer
-    my $i = 1;
-
-    my $iterations = 10;
-
-    my $id = Mojo::IOLoop->recurring(1 => sub {
-
-      warn "chuck $i";
-      $self->write_chunk("chunk $i\n", sub {} );
-      $self->finish if $i++ == $iterations;
-    });
-
-    # Stop recurring timer
-    $self->on(finish => sub { Mojo::IOLoop->remove($id) });
-};
+#sub stream
+#{
+#    my $self = shift;
+#
+#	$self->render_later;
+#
+#    # Start recurring timer
+#    my $i = 1;
+#
+#    my $iterations = 10;
+#
+#    my $id = Mojo::IOLoop->recurring(1 => sub {
+#
+#      warn "chuck $i";
+#      $self->write_chunk("chunk $i\n", sub {} );
+#      $self->finish if $i++ == $iterations;
+#    });
+#
+#    # Stop recurring timer
+#    $self->on(finish => sub { Mojo::IOLoop->remove($id) });
+#};
 
 # run a rex task in a websocket, sending back the log messages as we go
 sub run_ws
@@ -118,14 +118,14 @@ sub run_ws
 
 			foreach my $log_line (@$log_lines) {
 
-				warn "LOG: $log_line";
+#				warn "LOG: $log_line";
 				$_[0]->send($log_line);
 			}
 
 			if ($status =~ /^done/) {
 				$_[0]->send("STATUS: $status [$i]");
-				#unlink $temp_logfile;
-				#unlink $temp_status_file;
+				unlink $temp_logfile;
+				unlink $temp_status_file;
 			} else
 			{
 				$_[0]->send("STATUS: $status [$i]", $cb);
@@ -137,8 +137,6 @@ sub run_ws
 		return;
 	}
 
-	$self->tx->send( "******************* CHILD" );
-
 	$self->app->log->debug("calling rex: $task_name");
 	$self->tx->send( "calling rex: $task_name" );
 
@@ -148,6 +146,7 @@ sub run_ws
 	my $result = $self->rex->run_task($task_name, $temp_logfile);
 
 	$self->_set_status($temp_status_file, "done [$result]");
+
 	warn "DONE [$result]";
 
 	exit(0);

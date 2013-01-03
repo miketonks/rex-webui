@@ -1,13 +1,39 @@
  
  # Sample Rexfile
  
- desc "Show Unix version";
- task "uname", sub {
-     say run "uname -a";
- };
+desc "Show Unix version";
+task uname => sub {
+    say run "uname -a";
+};
  
- desc "Show Uptime";
- task "uptime", sub {
+desc "Show Uptime";
+task uptime => sub {
      say run "uptime";
- };
+};
+
+desc "Get Operating System";
+task get-os => sub {
+
+	my $os = get_operating_system();
+	my $os_version = operating_system_version();
+
+	Rex::Logger::info("OS: $os  [$os_version]");
+
+	#Rex::Logger::info("SYS INFO: " . Dumper({get_system_information()}));
+
+	my $memory = memory();
+	Rex::Logger::info("RAM: $memory->{total} Mb");
+
+	my $cpu_stat = `grep '^cpu[0-9]' /proc/stat`;
+	my $cpu = scalar ($cpu_stat =~ /(cpu[0-9])/g);
+	Rex::Logger::info("CPU: $cpu");
+	
+	my $data = {
+		os 			=> $os,
+		os_version	=> $os_version,
+		memory 		=> $memory,
+		cpu 		=> $cpu,
+	};
+};
+
  

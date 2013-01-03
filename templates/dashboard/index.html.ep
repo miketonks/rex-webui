@@ -9,11 +9,35 @@ Rexfile Loaded: <%= $rexfile %>
 <br />
 
 <div id="task_info">
-Tasks Available:
+<h2>Tasks Available</h2>
 
-<ul>
+<table>
 % for my $task (@$tasks) {
-	<li><a href="/task/view/<%= $task->{name} %>"><%= $task->{name} %> : <%= $task->{desc} %></a></li>
+	<tr>
+		<td width="100px;"><a href="/task/view/<%= $task->{name} %>"><img src="/images/task_32.png" style="padding: 0px 16px;" /></a></td>
+		<td width="30%"><a href="/task/view/<%= $task->{name} %>"><%= $task->{name} %></a></td>
+		<td><%= $task->{desc} %></td>
+	</tr>
 % }
-</ul>
+</table>
+</div>
+
+<br />
+<hr />
+<br />
+
+<div id="server_info">
+<h2>Servers</h2>
+
+<table>
+% for my $server (@$servers) {
+	<tr>
+		<td width="100px;"><a href="/server/view/<%= $server->{name} %>"><img src="/images/server_64.png" /></a></td>
+		<td width="30%;"><a href="/server/view/<%= $server->{name} %>"><%= $server->{name} %></a></td>
+		<td><%= $server->{desc} %></td>
+	</tr>
+% }
+</table>
+</div>
+
 </div>

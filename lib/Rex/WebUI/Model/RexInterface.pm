@@ -23,9 +23,9 @@ sub get_task
 {
 	my ($self, $task) = @_;
 
+	$task =~ s/^$STEM//;
+	
 	my $tasklist = $self->get_tasklist;
-
-warn "TASKLIST: " . Dumper($tasklist);
 
 	if ($tasklist->is_task("$STEM:$task")) {
 
@@ -97,6 +97,38 @@ sub get_tasklist
 	}
 }
 
+sub get_servers
+{
+	my $self = shift;
+
+	my $servers = [];
+
+	my $tasks = $self->get_tasks;
+
+	# build a list of server names from the task list
+	foreach my $task (@$tasks) {
+
+		$task = $self->get_task($task->{name});
+		
+		my $task_servers = $task->{server};
+		
+		next unless $task_servers && scalar @$task_servers > 0;
+		
+		foreach my $server (@$task_servers) {
+			push @$servers, $server->{name} unless $server->{name} ~~ $servers;	
+		}
+	}	
+
+	# expand server list into hashrefs, adding info from db if available
+	# TODO: add db interface
+	foreach my $server (@$servers) {
+		
+		$server = { name => $server};
+	}
+	
+	return $servers;
+}
+
 sub load_rexfile
 {
 	my ($self, $rexfile) = @_;
@@ -127,6 +159,8 @@ sub run_task
 
 	my $result = do_task("$STEM:$task");
 
+	Rex::Logger::info("DONE");
+	
 	return $result;
 }
 
