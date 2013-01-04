@@ -1,36 +1,49 @@
-% layout 'default';
+% if(! param("nolayout")) {
+%    layout 'default';
+% }
 
 <h1>Task Details: <%= $task->{name} %></h1>
 
 <div id="task_info">
 
-<img src="/images/task_128.png" style="float: right;" />
+<img src="/images/task_128.png" style="float: right;" class="task_image" />
 
-<table>
-	<tr>
-		<th>Description: </th>
-		<td><%= $task->{desc} %></td>
-	</tr>
-	<tr>
-		<th>Server: </th>
-		<td>
-% for my $server (@{$task->{server}}) {
-			<%= $server->{name} %>&nbsp;
-% }
-		</td>
-	</tr>
-</table>
+   <div class="info_table_area">
+      <div class="info_table_header"><span class="info_table_header">Task Information</span></div>
+      <table class="info_table">
+         <tr>
+            <th>Description: </th>
+            <td><%= $task->{desc} %></td>
+         </tr>
+         <tr>
+            <th>Server: </th>
+            <td>
+      % for my $server (@{$task->{server}}) {
+               <%= $server->{name} %>&nbsp;
+      % }
+            </td>
+         </tr>
+      </table>
+   </div>
 
 </div>
 
 <br />
 
 <div id="task_actions">
-Actions Available:
 
-<ul>
-	<li><a onclick="open_websocket();">Run Now [ with websockets ]</a>  &nbsp;  <a href="/task/run/<%= $task->{name} %>"><i>[ no websockets ]</i></a></li>
-</ul>
+   <div class="info_table_area">
+      <div class="info_table_header"><span class="info_table_header">Actions Available</span></div>
+      <ul>
+         <li>
+            <a onclick="open_websocket();">Run Now [ with websockets ]</a>  &nbsp;  
+            <a href="/task/run/<%= $task->{name} %>"><i>[ no websockets ]</i></a>
+         </li>
+      </ul>
+
+   </div>
+
+
 
 <div id="progress" style="display: none;" >
 
