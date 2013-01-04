@@ -16,8 +16,20 @@
 
       </div>
       <div id="project_list" class="ui-layout-west">
-         <h1>Projects</h1>
-         <a href="/">Dashboard</a>
+         <h1>Links</h1>
+         <p><a href="/">Dashboard</a></p>
+         <br />
+         <ul class="project_list">
+            % my $id = 0;
+            % for my $project (@{ config->{"projects"} }) {
+            <li>
+               <h2><a href="/project/<%= $id %>"><%= $project->{name} %></a></h2>
+               <p><%= $project->{description} %></p>
+            </li>
+            % $id++;
+            % }
+
+         </ul>
       </div>
 
       <div id="notification_area" class="ui-layout-south">
