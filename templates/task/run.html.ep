@@ -1,4 +1,6 @@
-% layout 'default';
+% if(! param("nolayout")) {
+%    layout 'default';
+% }
 
 <h1>Task Details: <%= $task->{name} %></h1>
 
