@@ -23,8 +23,8 @@ sub get_task
 {
 	my ($self, $task) = @_;
 
-	$task =~ s/^$STEM//;
-	
+	$task =~ s/^$STEM:?//;
+
 	my $tasklist = $self->get_tasklist;
 
 	if ($tasklist->is_task("$STEM:$task")) {
@@ -67,11 +67,12 @@ warn "PACKAGE: " . __PACKAGE__;
 		# get the task details for each
 		foreach my $task (@$tasks) {
 
-			$task =~ s/$STEM://;
+			my $task_name = $task;
+			$task_name =~ s/^$STEM://;
 
 			$task = {
-				name 		=> $task,
-				desc 		=> $tasklist->get_desc("$STEM:$task"),
+				name 		=> $task_name,
+				desc 		=> $tasklist->get_desc("$task") || $task_name,
 			};
 		}
 	}
@@ -109,23 +110,23 @@ sub get_servers
 	foreach my $task (@$tasks) {
 
 		$task = $self->get_task($task->{name});
-		
+
 		my $task_servers = $task->{server};
-		
+
 		next unless $task_servers && scalar @$task_servers > 0;
-		
+
 		foreach my $server (@$task_servers) {
-			push @$servers, $server->{name} unless $server->{name} ~~ $servers;	
+			push @$servers, $server->{name} unless $server->{name} ~~ $servers;
 		}
-	}	
+	}
 
 	# expand server list into hashrefs, adding info from db if available
 	# TODO: add db interface
 	foreach my $server (@$servers) {
-		
+
 		$server = { name => $server};
 	}
-	
+
 	return $servers;
 }
 
@@ -160,7 +161,7 @@ sub run_task
 	my $result = do_task("$STEM:$task");
 
 	Rex::Logger::info("DONE");
-	
+
 	return $result;
 }
 
