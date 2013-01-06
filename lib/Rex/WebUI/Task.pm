@@ -9,7 +9,11 @@ sub view
 {
 	my $self = shift;
 
+   my $id        = $self->param("id");
 	my $task_name = $self->param("name");
+
+   my $project = $self->config->{projects}->[$id];
+	$self->rex->load_rexfile($project->{rexfile});
 
 	$self->app->log->debug("Load task: $task_name");
 
@@ -25,9 +29,14 @@ sub run
 {
 	my $self = shift;
 
+   my $id        = $self->param("id");
 	my $task_name = $self->param("name");
 
+   my $project = $self->config->{projects}->[$id];
+	$self->rex->load_rexfile($project->{rexfile});
+
 	$self->app->log->debug("Load task: $task_name");
+
 
 	my $task = $self->rex->get_task($task_name);
 
@@ -84,7 +93,11 @@ sub run_ws
 	my $rex_status :shared = 'init';
 	my @log_messages :shared = ();
 
+   my $id        = $self->param("id");
 	my $task_name = $self->param("name");
+
+   my $project = $self->config->{projects}->[$id];
+	$self->rex->load_rexfile($project->{rexfile});
 
 	$self->app->log->debug("Load task: $task_name");
 

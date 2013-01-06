@@ -136,6 +136,13 @@ sub load_rexfile
 
   	$rexfile = $self->{rexfile} || "SampleRexfile" unless $rexfile;
 
+   $Rex::TaskList::task_list = {};
+   $self->{tasks} = undef;
+   delete $self->{tasks};
+
+   $self->{tasklist} = undef;
+   delete $self->{tasklist};
+
 	if (defined do($rexfile)) {
 
 		warn "Loaded Rexfile: $rexfile";
