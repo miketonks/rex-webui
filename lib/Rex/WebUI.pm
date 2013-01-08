@@ -41,7 +41,7 @@ sub startup {
 
 	$self->helper(rex => sub { state $rex = Rex::WebUI::Model::RexInterface->new });
 
-	$self->rex->load_rexfile($self->config->{rexfile});
+	#$self->rex->load_rexfile($self->config->{rexfile});
 
 	# Router
 	my $r = $self->routes;
@@ -49,10 +49,15 @@ sub startup {
 	# Normal route to controller
 	$r->get("/")->to("dashboard#index");
 	$r->get("/dashboard")->to("dashboard#view");
-	$r->get("/task/view/:name")->to("task#view");
-	$r->get("/task/run/:name")->to("task#run");
+#	$r->get("/task/view/:name")->to("task#view");
+#	$r->get("/task/run/:name")->to("task#run");
 #	$r->get("/task/stream/:id")->to("task#stream");
-	$r->websocket("/task/run_ws/:name")->to("task#run_ws");
+#	$r->websocket("/task/run_ws/:name")->to("task#run_ws");
+
+   $r->get("/project/:id")->to("project#index");
+   $r->get("/project/:id/task/view/:name")->to("task#view");
+   $r->get("/project/:id/task/run/:name")->to("task#run");
+   $r->websocket("/project/:id/task/run_ws/:name")->to("task#run_ws");
 }
 
 #sub rex {

@@ -2,7 +2,7 @@ function ajax_links() {
 
    var load_map = {
       '^/$': 'body',
-      '^/task/.*': '#content_area',
+      '^/project/.*': '#content_area',
       '^/server/.*': '#content_area',
       'default': '#content_area'
    };

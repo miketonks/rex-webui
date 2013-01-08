@@ -34,7 +34,8 @@ h2 {
    margin-top: 25px;
 }
 
-#server_info {
+#server_info,
+#task_history_info {
    margin-top: 25px;
    border-top: 2px solid #c3c3c3;
    padding-top: 25px;
@@ -71,4 +72,15 @@ div.info_table_area {
 
 ul {
    list-style-type: none;
+}
+
+ul.project_list li {
+   margin-bottom: 15px;
+}
+
+a,
+a:link,
+a:visited,
+a:active {
+   color: #4a8561;
 }
