@@ -7,10 +7,15 @@ function ajax_links() {
       'default': '#content_area'
    };
 
+console.log('ajax_links');
    $(document).ready(function() {
+console.log('ready');
 
       $("a").each(function(id, obj) {
-         if($(obj).attr("href")) {
+//console.log('class' + $(obj).attr('class'));
+         if($(obj).attr("href") && $(obj).attr('class') != 'bound') {
+
+			$(obj).addClass('bound')
             $(obj).click(function(event) {
                event.preventDefault();
                load_link($(this).attr("href"));
@@ -25,6 +30,7 @@ function ajax_links() {
       var content_area;
       var nolayout = 1;
 
+console.log('load_link');
       for (var key in load_map) {
          var searcher = new RegExp(key);
          if(searcher.exec(lnk)) {
