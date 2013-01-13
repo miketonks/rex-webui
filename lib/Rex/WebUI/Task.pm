@@ -12,6 +12,8 @@ sub view
    my $id        = $self->param("id");
 	my $task_name = $self->param("name");
 
+	$self->app->log->debug("View task: $task_name");
+
    my $project = $self->config->{projects}->[$id];
 	$self->rex->load_rexfile($project->{rexfile});
 
@@ -156,7 +158,7 @@ sub run_ws
 	$rex_status = 'running';
 	$self->_set_status($temp_status_file, 'running');
 
-	my $result = $self->rex->run_task($task_name, $temp_logfile);
+	my $result = $self->rex->do_run_task($task_name, $temp_logfile);
 
 	$self->_set_status($temp_status_file, "done [$result]");
 

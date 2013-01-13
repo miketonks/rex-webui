@@ -9,12 +9,7 @@ use Rex::Batch;
 use Rex::Group;
 
 use Data::Dumper;
-
-# rex task names end with with the module namespace as a 'stem' - remove for readability
-my $STEM = 'WebUI:Model:RexInterface';
-
-# global callback used to override / hook into Rex::Logger class
-our $LOG_CALLBACK;
+use Try::Tiny;
 
 
 sub new { bless {}, shift }
@@ -23,14 +18,14 @@ sub get_task
 {
 	my ($self, $task) = @_;
 
-	$task =~ s/^$STEM:?//;
-
 	my $tasklist = $self->get_tasklist;
 
-	if ($tasklist->is_task("$STEM:$task")) {
+	if ($tasklist->is_task("$task")) {
+
+		warn "Loading task: $task";
 
 		$task = {
-			%{$tasklist->get_task("$STEM:$task")->get_data},
+			%{$tasklist->get_task($task)->get_data},
 			name 		=> $task,
 		};
 
@@ -48,15 +43,11 @@ sub get_tasks
 {
 	my $self = shift;
 
-warn "COUNTER: " . $self->{counter}++;
-
-warn "PACKAGE: " . __PACKAGE__;
-
 	my $tasks;
 
 	if ($tasks = $self->{tasks}) {
 
-		$self->log->debug("Tasks already loaded");;
+		$self->log->debug("Tasks already loaded");
 	}
 	else {
 
@@ -64,15 +55,12 @@ warn "PACKAGE: " . __PACKAGE__;
 
 		$tasks = [ $tasklist->get_tasks ];
 
-		# get the task details for each
+		# get the task details for each - possibly more info we want here
 		foreach my $task (@$tasks) {
 
-			my $task_name = $task;
-			$task_name =~ s/^$STEM://;
-
 			$task = {
-				name 		=> $task_name,
-				desc 		=> $tasklist->get_desc("$task") || $task_name,
+				name 		=> $task,
+				desc 		=> $tasklist->get_desc("$task") || $task,
 			};
 		}
 	}
@@ -136,6 +124,7 @@ sub load_rexfile
 
   	$rexfile = $self->{rexfile} || "SampleRexfile" unless $rexfile;
 
+
    $Rex::TaskList::task_list = {};
    $self->{tasks} = undef;
    delete $self->{tasks};
@@ -143,80 +132,78 @@ sub load_rexfile
    $self->{tasklist} = undef;
    delete $self->{tasklist};
 
-	if (defined do($rexfile)) {
+	# Is rexfile already loaded?
+	if (exists $self->{rexfiles}->{$rexfile}) {
+
+		warn "Rexfile already loaded: $rexfile, use tasklist from cache";
+		$Rex::TaskList::task_list = $self->{rexfiles}->{$rexfile};
+
+		$self->{rexfile} = $rexfile;
+
+		return 1;
+	}
+
+	#$Rex::Logger::debug = 1;
+
+	# workaround namespace issues - Rex::CLI is handled already for this issue
+	if (defined _hacky_do_rexfile($rexfile)) {
 
 		warn "Loaded Rexfile: $rexfile";
 
 		$self->{rexfile} = $rexfile;
+
+		$self->{rexfiles}->{$rexfile} = $Rex::TaskList::task_list;
+
+		return 1;
 	}
 	else {
 
 		warn "Error loading Rexfile: $rexfile - $@";
 
-		$self->{rexfile} = undef;
+		return $self->{rexfile} = undef;
 	}
 }
 
-sub run_task
+sub _hacky_do_rexfile
 {
-	my ($self, $task, $temp_logfile) = @_;
+	my $filename = shift;
+   my $rexfile = eval { local(@ARGV, $/) = ($filename); <>; };
+   eval "package Rex::CLI; use Rex -base; $rexfile";
 
-	$::QUIET = 1;
+   if($@) {
+      die("Error loading Rexfile: $@");
+   }
+
+   return $rexfile;
+}
+
+# I'm getting a weird conflict with Rex::Commands::run_task so I'm renaming this to something more obscure
+sub do_run_task
+{
+	my ($self, $task_name, $temp_logfile) = @_;
+
+	#$::QUIET = 1;
+	#$Rex::Logger::debug = 1;
 
 	Rex::Config->set_log_filename($temp_logfile) if $temp_logfile;
 
-	my $result = do_task("$STEM:$task");
+	my $result;
 
-	Rex::Logger::info("DONE");
+	try {
+		$result = Rex::Commands::run_task("$task_name");
 
-	return $result;
+      #my $task = Rex::TaskList->create()->get_task($task_name);
+      #$result = $task->run("<local>"); #, params => $params);
+
+		Rex::Logger::info("DONE");
+
+		return $result;
+	}
+	catch {
+		Rex::Logger::info("Task Failed: $_", 'error');
+		return undef;
+	};
 }
-
-sub register_log_callback
-{
-	my ($self, $callback) = @_;
-
-	$LOG_CALLBACK = $callback;
-}
-
-sub release_log_callback
-{
-	my ($self) = shift;
-
-	$LOG_CALLBACK = undef;
-}
-
-
-#sub Rex::Logger::info
-#{
-#	my ($msg, $type) = @_;
-#
-#	return unless $LOG_CALLBACK;
-#
-#	warn "XXX INFO: $msg";
-#
-#	if(defined($type)) {
-#		$msg = Rex::Logger::format_string($msg, uc($type));
-#	}
-#	else {
-#		$msg = Rex::Logger::format_string($msg, "INFO");
-#	}
-#
-#	$LOG_CALLBACK->($msg);
-#}
-#
-#sub Rex::Logger::debug
-#{
-#	my ($msg, $type) = @_;
-#
-#	return unless $LOG_CALLBACK;
-#
-#	warn "XXX DEBUG: $msg";
-#
-#	$msg = Rex::Logger::format_string($msg, "DEBUG");
-#	$LOG_CALLBACK->($msg);
-#}
-
 
 1;
 

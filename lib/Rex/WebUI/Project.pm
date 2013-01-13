@@ -4,6 +4,7 @@ use Mojo::Base 'Mojolicious::Controller';
 use Data::Dumper;
 
 sub index {
+
    my $self = shift;
 
    my $id = $self->param("id");
@@ -11,9 +12,7 @@ sub index {
 
 	$self->rex->load_rexfile($project->{rexfile});
 
-   my $tasks = $self->rex->get_tasks;
-   #my $tasks = ['Update Stage Server', 'Update Stage Server','Update Web Cluster', 'Restart Nginx', 'Restart Database Server'];
-
+   my $tasks   = $self->rex->get_tasks;
    my $servers = $self->rex->get_servers;
 
    $self->stash(name => $project->{name});
@@ -22,11 +21,7 @@ sub index {
    $self->stash(tasks => $tasks);
    $self->stash(servers => $servers);
 
-   $self->app->log->debug("xTASKS: " . Dumper($tasks));
-
    $self->render;
-
 }
-
 
 1;
