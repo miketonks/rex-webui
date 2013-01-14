@@ -1,5 +1,8 @@
 #!/usr/bin/env perl
 
+#use lib '../Rex/lib';
+#use lib '../../Rex/lib';
+
 use Mojo::Base -strict;
 
 use File::Basename 'dirname';
