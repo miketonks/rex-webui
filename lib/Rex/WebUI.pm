@@ -56,8 +56,8 @@ sub startup {
 
    $r->get("/project/:id")->to("project#index");
    $r->get("/project/:id/task/view/:name")->to("task#view");
-   $r->get("/project/:id/task/run/:name")->to("task#run");
-   $r->websocket("/project/:id/task/run_ws/:name")->to("task#run_ws");
+   $r->post("/project/:id/task/run/:name")->to("task#run");
+   $r->websocket("/project/:id/task/tail_ws/:jobid")->to("task#tail_ws");
 }
 
 #sub rex {

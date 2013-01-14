@@ -36,32 +36,38 @@
       <div class="info_table_header"><span class="info_table_header">Actions Available</span></div>
       <ul>
          <li>
-            <a onclick="open_websocket();">Run Now [ with websockets ]</a>  &nbsp;  
-            <a href="/project/<%= param("id") %>/task/run/<%= $task->{name} %>"><i>[ no websockets ]</i></a>
+            <a onclick="run_task();">Run Now</a>
          </li>
       </ul>
-
    </div>
 
+	<div id="progress" style="display: none;" >
 
+		<img id="status_icon" src="/images/blank.png" style="float: right; padding: 0px 32px;" />
 
-<div id="progress" style="display: none;" >
-
-<img id="status_icon" src="/images/working.gif" style="float: right; padding: 0px 32px;" />
-
-<div style="margin: 20px; border: 1px solid black; background: #222; color: white; padding: 10px; width: 60%; height: 200px; overflow-y: scroll;" id="log_panel"></div>
-
-</div>
-
+		<div style="margin: 20px; border: 1px solid black; background: #222; color: white; padding: 10px; width: 60%; height: 200px; overflow-y: scroll;" id="log_panel"></div>
+	</div>
 </div>
 
 
 <script type="text/javascript">
-function open_websocket() {
+function run_task() {
+
+	$.post("/project/<%= param("id") %>/task/run/<%= $task->{name} %>", { "task_name": "<%= $task->{name} %>" },
+		function(data){
+			console.log('JobID: ' + data.jobid);
+	      	$('#status_icon').attr('src', '/images/working.gif');
+			open_websocket(data.jobid);
+		});
+	//.error(function() { alert("error"); });
+
+}
+
+function open_websocket(jobid) {
 
 	$('#progress').show();
 
-    var ws = new (WebSocket || MozWebSocket)('ws://localhost:3000/project/<%= param("id") %>/task/run_ws/<%= $task->{name} %>');
+    var ws = new (WebSocket || MozWebSocket)('ws://localhost:3000/project/<%= param("id") %>/task/tail_ws/' + jobid);
     var timer_id;
     ws.onopen = function() {
       console.log('Connection opened');

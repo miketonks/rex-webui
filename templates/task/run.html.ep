@@ -10,13 +10,4 @@ Description: <%= $task->{desc} %>
 
 <br />
 
-<div id="task_result">
-Result: [<%= $result %>]
-
-<br /><br />
-
-% for my $line (@$log) {
-	<%= $line %><br />
-% }
-
-</div>
+Running Task - JobID is: $jobid

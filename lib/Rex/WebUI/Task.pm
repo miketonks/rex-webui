@@ -26,7 +26,7 @@ sub view
 	$self->render;
 }
 
-# run a rex task in a conventional HTTP GET
+# run a rex task in a conventional HTTP GET / POST
 sub run
 {
 	my $self = shift;
@@ -39,7 +39,6 @@ sub run
 
 	$self->app->log->debug("Load task: $task_name");
 
-
 	my $task = $self->rex->get_task($task_name);
 
 	unless ($task) {
@@ -48,14 +47,41 @@ sub run
 		$self->render;
 	}
 
-	$self->stash(task => $task);
+	my $jobid = time; # temp jobid for now
 
-	my ($result, $log) = $self->rex->run_task($task_name);
+	$self->app->log->debug("Got jobid: $jobid");
 
-	$self->stash(result => $result);
-	$self->stash(log => $log);
+	$self->render(json => { jobid => $jobid });
 
-	$self->render;
+	$self->app->log->debug("After render");
+
+	my $temp_logfile     = "/tmp/rex_" . $jobid . '.log';
+	my $temp_status_file = "/tmp/rex_" . $jobid . '.status';
+
+	$self->_set_status($temp_status_file, 'init');
+
+	# I wish we didn't have to fork here, if there's a better way please tell me
+
+	# after forking parent thread can write to websocket, but child can't
+	if ($self->_fork_process()) {
+
+		# parent thread
+		$self->app->log->debug("Parent Thread - return response to browser");
+
+		return;
+	}
+
+	$self->app->log->debug("calling rex: $task_name");
+
+	$self->_set_status($temp_status_file, 'running');
+
+	my $result = $self->rex->do_run_task($task_name, $temp_logfile);
+
+	$self->_set_status($temp_status_file, "done [$result]");
+
+	warn "DONE [$result]";
+
+	exit(0);
 }
 
 # just a test method to explore mojo streaming
@@ -82,9 +108,33 @@ sub run
 #};
 
 # run a rex task in a websocket, sending back the log messages as we go
-sub run_ws
+sub tail_ws
 {
 	my $self = shift;
+
+   my $id    = $self->param("id"); # project id not really required here at the moment
+	my $jobid = $self->param("jobid");
+
+	$self->app->log->debug("Tail ws - jobid: $jobid");
+
+	my $temp_logfile     = "/tmp/rex_" . $jobid . '.log';
+	my $temp_status_file = "/tmp/rex_" . $jobid . '.status';
+
+	$self->res->headers->content_type('text/event-stream');
+
+	# give a little
+	foreach my $i (1..5) {
+		unless (-f $temp_logfile) {
+			warn "Not Found: $temp_logfile - give a little";
+			sleep 1;
+		}
+	}
+
+	unless (-f $temp_logfile) {
+
+		$self->send("ERROR: File Not Found: $temp_logfile");
+		return;
+	}
 
 	Mojo::IOLoop->stream($self->tx->connection)->timeout(300);
 
@@ -92,79 +142,33 @@ sub run_ws
 	my $log_position = 0;
 	my $cb;
 
-	my $rex_status :shared = 'init';
-	my @log_messages :shared = ();
+	$cb = sub {
+		sleep 1;
+		$i++;
+		my $status = $self->_get_status($temp_status_file);
 
-   my $id        = $self->param("id");
-	my $task_name = $self->param("name");
+		my ($log_lines, $new_log_position) = $self->_read_log($temp_logfile, $log_position);
 
-   my $project = $self->config->{projects}->[$id];
-	$self->rex->load_rexfile($project->{rexfile});
+		$log_position = $new_log_position;
 
-	$self->app->log->debug("Load task: $task_name");
+		foreach my $log_line (@$log_lines) {
 
-	my $task = $self->rex->get_task($task_name);
+			$_[0]->send($log_line);
+		}
 
-	my $pid = "$self";
+		if ($status =~ /^done/) {
+			$_[0]->send("STATUS: $status [$i]");
+			unlink $temp_logfile;
+			unlink $temp_status_file;
+		} else
+		{
+			$_[0]->send("STATUS: $status [$i]", $cb);
+		}
+	};
 
-	warn "PID: $pid";
+	$self->$cb;
 
-	my $temp_logfile     = "/tmp/rex_" . time . '.log';
-	my $temp_status_file = "/tmp/rex_" . time . '.status';
-
-	$self->res->headers->content_type('text/event-stream');
-
-	$self->_set_status($temp_status_file, 'init');
-
-	# after forking parent thread can write to websocket, but child can't
-	if ($self->_fork_process()) {
-
-		# parent thread
-		$self->app->log->debug("Parent Thread - wait for end signal");
-
-		$cb = sub {
-			sleep 1;
-			$i++;
-			my $status = $self->_get_status($temp_status_file);
-
-			my ($log_lines, $new_log_position) = $self->_read_log($temp_logfile, $log_position);
-
-			$log_position = $new_log_position;
-
-			foreach my $log_line (@$log_lines) {
-
-#				warn "LOG: $log_line";
-				$_[0]->send($log_line);
-			}
-
-			if ($status =~ /^done/) {
-				$_[0]->send("STATUS: $status [$i]");
-				unlink $temp_logfile;
-				unlink $temp_status_file;
-			} else
-			{
-				$_[0]->send("STATUS: $status [$i]", $cb);
-			}
-		};
-
-		$self->$cb;
-
-		return;
-	}
-
-	$self->app->log->debug("calling rex: $task_name");
-	$self->tx->send( "calling rex: $task_name" );
-
-	$rex_status = 'running';
-	$self->_set_status($temp_status_file, 'running');
-
-	my $result = $self->rex->do_run_task($task_name, $temp_logfile);
-
-	$self->_set_status($temp_status_file, "done [$result]");
-
-	warn "DONE [$result]";
-
-	exit(0);
+	return;
 }
 
 sub _fork_process
@@ -235,7 +239,7 @@ sub _read_log
 
 	# this is a very, very crude way to tail the log, but it will do fine for small log files
 
-	if (-e $logfile) {
+	if (-f $logfile) {
 		open FILE, "<", $logfile;
 
 		my @lines = <FILE>;
