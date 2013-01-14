@@ -67,7 +67,7 @@ function open_websocket(jobid) {
 
 	$('#progress').show();
 
-    var ws = new (WebSocket || MozWebSocket)('ws://localhost:3000/project/<%= param("id") %>/task/tail_ws/' + jobid);
+    var ws = new (WebSocket || MozWebSocket)('<%= $tail_ws_url %>' + jobid);
     var timer_id;
     ws.onopen = function() {
       console.log('Connection opened');

@@ -21,7 +21,10 @@ sub view
 
 	my $task = $self->rex->get_task($task_name);
 
+	my $ws_url = $self->url_for('tail_ws')->to_abs;
+
 	$self->stash(task => $task);
+	$self->stash(tail_ws_url => $ws_url);
 
 	$self->render;
 }
