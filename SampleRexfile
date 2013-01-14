@@ -64,3 +64,23 @@ task nested_task2 => sub {
 	say "nested_task2 running";
 	Rex::Logger::info("nested_task2 running");
 };
+
+desc "Long Running Task";
+task long_run => sub {
+
+	foreach my $i (1..20) {
+
+		sleep 2;
+		Rex::Logger::info("long_run: $i");
+	}
+};
+
+desc "Longer Running Task";
+task long_run2 => sub {
+
+	foreach my $i (1..100) {
+
+		sleep 2;
+		Rex::Logger::info("long_run: $i");
+	}
+};
