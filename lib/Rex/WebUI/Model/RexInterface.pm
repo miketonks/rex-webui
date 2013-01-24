@@ -143,8 +143,6 @@ sub load_rexfile
 		return 1;
 	}
 
-	#$Rex::Logger::debug = 1;
-
 	# workaround namespace issues - Rex::CLI is handled already for this issue
 	if (defined _hacky_do_rexfile($rexfile)) {
 
@@ -180,20 +178,14 @@ sub _hacky_do_rexfile
 # I'm getting a weird conflict with Rex::Commands::run_task so I'm renaming this to something more obscure
 sub do_run_task
 {
-	my ($self, $task_name, $temp_logfile) = @_;
-
-	#$::QUIET = 1;
-	#$Rex::Logger::debug = 1;
+	my ($self, $task_name, $server_name, $temp_logfile) = @_;
 
 	Rex::Config->set_log_filename($temp_logfile) if $temp_logfile;
 
 	my $result;
 
 	try {
-		$result = Rex::Commands::run_task("$task_name");
-
-      #my $task = Rex::TaskList->create()->get_task($task_name);
-      #$result = $task->run("<local>"); #, params => $params);
+		$result = Rex::Commands::run_task("$task_name", on => $server_name);
 
 		Rex::Logger::info("DONE");
 
@@ -204,6 +196,15 @@ sub do_run_task
 		return undef;
 	};
 }
+
+sub options
+{
+	my ($self, $opts) = @_;
+
+	$Rex::Logger::debug = $opts->{debug} if exists $opts->{debug};
+	$Rex::Cache::USE    = $opts->{cache} if exists $opts->{cache};
+}
+
 
 1;
 

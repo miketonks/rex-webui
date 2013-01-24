@@ -78,11 +78,18 @@ sub run
 
 	$self->_set_status($temp_status_file, 'running');
 
-	my $result = $self->rex->do_run_task($task_name, $temp_logfile);
+	foreach my $server (@{$task->{server}}) {
 
-	$self->_set_status($temp_status_file, "done [$result]");
+		my $server_name = $server->{name};
 
-	warn "DONE [$result]";
+		$self->app->log->debug("running task: $task_name on server: $server_name");
+
+		my $result = $self->rex->do_run_task($task_name, $server_name, $temp_logfile);
+	}
+
+	$self->app->log->debug("finished running task");
+
+	$self->_set_status($temp_status_file, "done");
 
 	exit(0);
 }
