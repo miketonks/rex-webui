@@ -7,12 +7,10 @@ function ajax_links() {
       'default': '#content_area'
    };
 
-console.log('ajax_links');
    $(document).ready(function() {
-console.log('ready');
 
       $("a").each(function(id, obj) {
-//console.log('class' + $(obj).attr('class'));
+
          if($(obj).attr("href") && $(obj).attr('class') != 'bound') {
 
 			$(obj).addClass('bound')
@@ -30,7 +28,6 @@ console.log('ready');
       var content_area;
       var nolayout = 1;
 
-console.log('load_link');
       for (var key in load_map) {
          var searcher = new RegExp(key);
          if(searcher.exec(lnk)) {
@@ -54,6 +51,4 @@ console.log('load_link');
          });
       }
    }
-
 }
-

@@ -34,10 +34,10 @@ sub run
 {
 	my $self = shift;
 
-   my $id        = $self->param("id");
+	my $id        = $self->param("id");
 	my $task_name = $self->param("name");
 
-   my $project = $self->config->{projects}->[$id];
+	my $project = $self->config->{projects}->[$id];
 	$self->rex->load_rexfile($project->{rexfile});
 
 	$self->app->log->debug("Load task: $task_name");
@@ -50,11 +50,20 @@ sub run
 		$self->render;
 	}
 
-	my $jobid = time; # temp jobid for now
+	my $servers = $task->{server};
+
+	$servers = [{ name => '<local>'}] if scalar @$servers == 0;
+
+
+	my $jobid = $self->logbook->add({
+		task_name => $task_name,
+		server    => $servers,
+		userid    => 1,
+	});
 
 	$self->app->log->debug("Got jobid: $jobid");
 
-	$self->render(json => { jobid => $jobid });
+	$self->render(json => { jobid => $jobid, status => "starting task: $task_name" });
 
 	$self->app->log->debug("After render");
 
@@ -66,10 +75,12 @@ sub run
 	# I wish we didn't have to fork here, if there's a better way please tell me
 
 	# after forking parent thread can write to websocket, but child can't
-	if ($self->_fork_process()) {
+	if (my $pid = $self->_fork_process()) {
 
 		# parent thread
 		$self->app->log->debug("Parent Thread - return response to browser");
+
+		$self->logbook->set_pid($jobid, $pid);
 
 		return;
 	}
@@ -78,11 +89,14 @@ sub run
 
 	$self->_set_status($temp_status_file, 'running');
 
-	foreach my $server (@{$task->{server}}) {
+	$self->logbook->update_status($jobid, 1);
+
+	foreach my $server (@$servers) {
 
 		my $server_name = $server->{name};
 
 		$self->app->log->debug("running task: $task_name on server: $server_name");
+		Rex::Logger::info("running task: $task_name on server: $server_name");
 
 		my $result = $self->rex->do_run_task($task_name, $server_name, $temp_logfile);
 	}
@@ -91,38 +105,17 @@ sub run
 
 	$self->_set_status($temp_status_file, "done");
 
+	$self->logbook->update_status($jobid, 2);
+
 	exit(0);
 }
-
-# just a test method to explore mojo streaming
-#sub stream
-#{
-#    my $self = shift;
-#
-#	$self->render_later;
-#
-#    # Start recurring timer
-#    my $i = 1;
-#
-#    my $iterations = 10;
-#
-#    my $id = Mojo::IOLoop->recurring(1 => sub {
-#
-#      warn "chuck $i";
-#      $self->write_chunk("chunk $i\n", sub {} );
-#      $self->finish if $i++ == $iterations;
-#    });
-#
-#    # Stop recurring timer
-#    $self->on(finish => sub { Mojo::IOLoop->remove($id) });
-#};
 
 # run a rex task in a websocket, sending back the log messages as we go
 sub tail_ws
 {
 	my $self = shift;
 
-   my $id    = $self->param("id"); # project id not really required here at the moment
+	my $id    = $self->param("id"); # project id not really required here at the moment
 	my $jobid = $self->param("jobid");
 
 	$self->app->log->debug("Tail ws - jobid: $jobid");

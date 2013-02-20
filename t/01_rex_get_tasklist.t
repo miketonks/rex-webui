@@ -22,16 +22,16 @@ my $tasks = [ $tasklist->get_tasks ];
 #   exit;
 #}
 
-is(scalar @$tasks, 2, "2 Tasks defined");
+is(scalar @$tasks, 7, "7 Tasks defined");
 
 my $task1 = $tasks->[0];
 my $task2 = $tasks->[1];
 
-is($task1, 'uname', "First task is: uname");
-is($task2, 'uptime', "Second task is: uptime");
+is($task1, 'get-os', "First task is: get-os");
+is($task2, 'long_run', "Second task is: long_run");
 
-is($tasklist->get_desc($task1), 'Show Unix version', 'Task 1 desc');
-is($tasklist->get_desc($task2), 'Show Uptime', 'Task 2 desc');
+is($tasklist->get_desc($task1), 'Get Operating System', 'Task 1 desc');
+is($tasklist->get_desc($task2), 'Long Running Task', 'Task 2 desc');
 
 #for my $task (@tasks) {
 #   printf "  %-30s %s\n", $task, Rex::TaskList->create()->get_desc($task);
