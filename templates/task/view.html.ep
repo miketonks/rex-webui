@@ -57,7 +57,9 @@ function run_task() {
 		function(data){
 			console.log('JobID: ' + data.jobid);
 	      	$('#status_icon').attr('src', '/images/working.gif');
-			open_websocket(data.jobid);
+			open_websocket(data.jobid)
+			notification.stop_timer();
+			notification.set_status(data.status);
 		});
 	//.error(function() { alert("error"); });
 
@@ -83,11 +85,14 @@ function open_websocket(jobid) {
       if (msg.data.match(/^STATUS: done/)) {
       	console.log('STATUS DONE >> ' + msg.data);
       	$('#status_icon').attr('src', '/images/ok.png');
+      	notification.set_status('Completed');
+      	ws.close();
       	return;
       }
 
       if (msg.data.match(/^STATUS/)) {
       	console.log('STATUS >> ' + msg.data);
+      	notification.set_status(msg.data);
       	return;
       }
 
@@ -105,16 +110,17 @@ function open_websocket(jobid) {
       if (msg.data == '\n' && $('pre:last').text() == '\n') return;
       $('<pre style="color: ' + color + '">').text(msg.data).appendTo('div#log_panel');
 
-      var log_panel = $('#log_panel');
+      var log_panel = $('#log_panel')[0];
 
-      //log_panel.scrollTop(log_panel.scrollHeight);
-      log_panel.scrollTop = log_panel.scrollHeight;
+      var scrollHeight = Math.max(log_panel.scrollHeight, log_panel.clientHeight);
+      log_panel.scrollTop = scrollHeight - log_panel.clientHeight;
 
       console.log('DATA: '+ msg.data + '[' + color + ']');
     };
     ws.onclose = function() {
       console.warn('Connection closed');
       clearInterval(timer_id);
+      notification.start_timer();
     };
     ws.onerror = function(msg) {
       console.error(msg.data);

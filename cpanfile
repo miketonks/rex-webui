@@ -5,6 +5,8 @@ requires 'Mojolicious', 3.11;
 requires 'Rex', 0.38;
 
 requires 'Data::Dumper';
+requires 'DBD::SQLite';
+requires 'DBIx::Foo';
 requires 'File::Basename';
 requires 'Try::Tiny';
 
