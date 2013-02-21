@@ -13,9 +13,19 @@ use Rex::WebUI::Model::RexInterface;
 use DBIx::Foo qw(:all);
 use Data::Dumper;
 
+use File::Basename 'dirname';
+use File::Spec::Functions 'catdir';
+
+our $VERSION = '1.0';
+
 # This method will run once at server start
 sub startup {
 	my $self = shift;
+
+    # Switch to installable home directory
+    $self->home->parse(catdir(dirname(__FILE__), 'WebUI'));
+    $self->static->paths->[0] = $self->home->rel_dir('public');
+    $self->renderer->paths->[0] = $self->home->rel_dir('templates');
 
 	my @cfg = ("/etc/rex/webui.conf", "/usr/local/etc/rex/webui.conf", "webui.conf");
 	my $cfg;
