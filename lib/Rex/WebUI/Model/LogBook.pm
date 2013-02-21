@@ -83,7 +83,7 @@ sub running_tasks
 		if ($row->{pid}) {
 			unless (my $check = kill 0, $row->{pid}) {
 				$row->{status} = 'DEAD' ;
-				$self->update_status($row->{jobid}, -1);
+				$self->update_status($row->{jobid}, 3);
 			}
 		}
 		else {

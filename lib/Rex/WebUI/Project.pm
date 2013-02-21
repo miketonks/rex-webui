@@ -10,7 +10,7 @@ sub index {
    my $id = $self->param("id");
    my $project = $self->config->{projects}->[$id];
 
-	$self->rex->load_rexfile($project->{rexfile});
+   $self->rex->load_rexfile($project->{rexfile});
 
    my $tasks   = $self->rex->get_tasks;
    my $servers = $self->rex->get_servers;
