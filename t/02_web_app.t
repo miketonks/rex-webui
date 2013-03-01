@@ -37,6 +37,9 @@ $t->text_is(".info_table tr:nth-child(1) td" => "Long Running Task");
 $t->text_is(".info_table tr:nth-child(2) th" => "Server:");
 $t->text_is(".info_table tr:nth-child(2) td" => "");
 
+# set a delay in the server call to ensure things happen in the right order here
+$Rex::WebUI::Task::TEST_DELAY_AFTER_RUN_TASK = 2;
+
 $t->post_ok('/project/0/task/run/uptime' => form => { task_name => 'uptime' });
 $t->status_is(200);
 $t->json_is('/status' => 'starting task: uptime');
@@ -57,7 +60,7 @@ $t->text_like("#task_info tr:nth-child(2) td:nth-child(5)" => qr/Starting|Runnin
 
 # There is some problem with threading: Can't create listen socket: Address already in use at /usr/local/share/perl/5.10.1/Mojo/IOLoop.pm line 147.
 # But as long as I run a short task and have a small nap here, it seems to work out ok
-sleep 1;
+sleep 10;
 
 eval { $t->websocket_ok('/project/0/task/tail_ws/1'); };
 warn "ERROR: $@" if $@;

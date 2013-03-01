@@ -4,6 +4,8 @@ use Mojo::Base 'Mojolicious::Controller';
 
 use Data::Dumper;
 
+our $TEST_DELAY_AFTER_RUN_TASK = 0;
+
 # This action will render a template
 sub view
 {
@@ -100,6 +102,8 @@ sub run
 
 		my $result = $self->rex->do_run_task($task_name, $server_name, $temp_logfile);
 	}
+
+	sleep $TEST_DELAY_AFTER_RUN_TASK if $TEST_DELAY_AFTER_RUN_TASK;
 
 	$self->app->log->debug("finished running task");
 
