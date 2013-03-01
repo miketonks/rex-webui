@@ -1,0 +1,23 @@
+# Version control files and dirs.
+.git
+
+# Project files
+.includepath
+.project
+
+# Makemaker generated files and dirs.
+^MANIFEST\.
+^Makefile$
+^blib/
+^MakeMaker-\d
+^pm_to_blib
+\.tar.gz
+
+# Temp, old and emacs backup files.
+~$
+\.old$
+^#.*#$
+^\.#
+webui.db
+^webui.conf
+^SampleRexfile2

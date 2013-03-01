@@ -60,7 +60,7 @@ $t->text_like("#task_info tr:nth-child(2) td:nth-child(5)" => qr/Starting|Runnin
 
 # There is some problem with threading: Can't create listen socket: Address already in use at /usr/local/share/perl/5.10.1/Mojo/IOLoop.pm line 147.
 # But as long as I run a short task and have a small nap here, it seems to work out ok
-sleep 10;
+sleep 3;
 
 eval { $t->websocket_ok('/project/0/task/tail_ws/1'); };
 warn "ERROR: $@" if $@;
