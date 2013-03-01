@@ -1,5 +1,5 @@
 
-use Test::More tests => 31;
+use Test::More tests => 32;
 use Test::Mojo;
 use File::Copy;
 
@@ -64,6 +64,8 @@ warn "ERROR: $@" if $@;
 
 $t->message_ok;
 $t->message_like(qr/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}] INFO - DONE\n$/);
+
+$t->finish_ok();
 
 warn "CONTENT: " . $t->tx->res->body;
 
