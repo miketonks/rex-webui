@@ -27,7 +27,7 @@ sub startup {
     $self->static->paths->[0] = $self->home->rel_dir('public');
     $self->renderer->paths->[0] = $self->home->rel_dir('templates');
 
-	my @cfg = ("/etc/rex/webui.conf", "/usr/local/etc/rex/webui.conf", "webui.conf");
+	my @cfg = ("/etc/rex/webui.conf", "/usr/local/etc/rex/webui.conf", "webui.conf", $self->home->rel_file('webui.conf'));
 	my $cfg;
 	for my $file (@cfg) {
 		if(-f $file) {
@@ -35,9 +35,12 @@ sub startup {
 			last;
 		}
 	}
-	$self->plugin('Config', file => $cfg);
-
-warn "start ********************************************************";
+	if ($cfg) {
+		$self->plugin('Config', file => $cfg);
+	} else {
+		# config should always be found because we ship a default config file, but best to check
+		die "Config file not found" unless $cfg;
+	}
 
 	if (my $secret = $self->config->{secret_passphrase}) {
 		$self->secret($secret);
@@ -54,8 +57,6 @@ warn "start ********************************************************";
 
 	$self->helper(rex => sub { state $rex = Rex::WebUI::Model::RexInterface->new });
 	$self->helper(logbook => sub { state $rex = Rex::WebUI::Model::LogBook->new($self->dbh) });
-
-	#$self->rex->load_rexfile($self->config->{rexfile});
 
 	# Router
 	my $r = $self->routes;
