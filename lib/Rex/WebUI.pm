@@ -6,6 +6,7 @@ use strict;
 use Mojo::Base "Mojolicious";
 
 use Mojo::Log;
+use Mojolicious::Plugin::Database;
 
 use Rex::WebUI::Model::LogBook;
 use Rex::WebUI::Model::RexInterface;
