@@ -20,7 +20,7 @@ use File::Basename 'dirname';
 use File::Copy;
 use File::Spec::Functions 'catdir';
 
-our $VERSION = '1.0';
+our $VERSION = '0.01';
 
 # This method will run once at server start
 sub startup {
