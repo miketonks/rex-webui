@@ -11,6 +11,8 @@ use Mojolicious::Plugin::Database;
 use Rex::WebUI::Model::LogBook;
 use Rex::WebUI::Model::RexInterface;
 
+use Cwd qw(abs_path);
+
 use DBIx::Foo qw(:all);
 use Data::Dumper;
 
@@ -28,16 +30,8 @@ sub startup {
     $self->static->paths->[0] = $self->home->rel_dir('public');
     $self->renderer->paths->[0] = $self->home->rel_dir('templates');
 
-	my @cfg = ("/etc/rex/webui.conf", "/usr/local/etc/rex/webui.conf", "webui.conf", $self->home->rel_file('webui.conf'));
-	my $cfg;
-	for my $file (@cfg) {
-		if(-f $file) {
-			$cfg = $file;
-			last;
-		}
-	}
-	if ($cfg) {
-		$self->plugin('Config', file => $cfg);
+	if (my $cfg = $self->_locate_config_file) {
+		$self->plugin('Config', file => "$cfg");
 	} else {
 		# config should always be found because we ship a default config file, but best to check
 		die "Config file not found" unless $cfg;
@@ -104,10 +98,29 @@ sub _init_sqllite_db {
 	$self->dbh_do("insert into users (userid, username) values (1, 'admin')");
 
 	$self->dbh_do("create table status (statusid INTEGER PRIMARY KEY AUTOINCREMENT, status varchar(20))");
-	$self->dbh_do("insert into status (statusid, status) values (0, 'Starting'), (1, 'Running'), (2, 'Completed'), (3, 'Died')");
+	$self->dbh_do("insert into status (statusid, status) values (0, 'Starting')");
+	$self->dbh_do("insert into status (statusid, status) values (1, 'Running')");
+	$self->dbh_do("insert into status (statusid, status) values (2, 'Completed')");
+	$self->dbh_do("insert into status (statusid, status) values (3, 'Died')");
 
 	$self->dbh_do("create table logbook (jobid INTEGER PRIMARY KEY AUTOINCREMENT, userid int not null, task_name varchar(100), server varchar(100), statusid int, pid int)");
 	return 1;
+}
+
+sub _locate_config_file
+{
+	my $self = shift;
+
+	# check optional locations for config file, inc current directory and finally the mojo home dir
+	my @cfg = ("/etc/rex/webui.conf", "/usr/local/etc/rex/webui.conf", abs_path("webui.conf"), abs_path($self->home->rel_file('webui.conf')));
+
+	my $cfg;
+	for my $file (@cfg) {
+		if(-f $file) {
+			return $file;
+			last;
+		}
+	}
 }
 
 1;
