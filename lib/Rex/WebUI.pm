@@ -132,3 +132,71 @@ sub _locate_config_file
 }
 
 1;
+
+
+__END__
+
+=head1 NAME
+
+Rex::WebUI - Simple web frontend for rex (Remote Execution), using Mojolicious.  Easily deploy or manage servers via a web interface.
+
+=head1 SYNOPSIS
+
+  rex-webui daemon
+
+  # or if you prefer using hypnotoad
+  hypnotoad bin/rex-webui
+
+and point your browser at http://localhost:3000
+
+=head1 DESCRIPTION
+
+This is an installable web application that provides a front end to Rex projects (see http://rexify.org)
+
+Almost unlimited functionality is available via Rex, perfect for deploying servers and managing clusters, or anything you can automate via ssh.
+
+Build multiple Rexfiles (one per project) and register them in webui.conf
+
+The web interface allows to you browse and run tasks, and records a history of running and completed tasks.
+
+A small SQLite db is used to store the history.
+
+
+=head1 EXAMPLE CONFIG
+
+  {
+     name 				=> 'Rex Web Delopyment Console',
+     secret_passphrase 	=> 'rex-webui',
+     projects 				=> [
+        {
+           name        => 'SampleRexfile',
+           rexfile     => "SampleRexfile",
+           description => "This is a sample Project. With a few tasks.",
+        },
+     ],
+     db_config 			=> [ dsn => 'dbi:SQLite:dbname=webui.db', username => '', password => '' ],
+  };
+
+=head1 SampleRexfile
+
+ # Sample Rexfile
+
+  desc "Show Unix version";
+  task uname => sub {
+      my $uname = run "uname -a";
+
+      Rex::Logger::info("uname: $uname");
+
+      return $uname;
+  };
+
+  desc "Show Uptime";
+  task uptime => sub {
+      my $uptime = run "uptime";
+
+      Rex::Logger::info("uptime: $uptime");
+
+      return $uptime;
+  };
+
+=cut

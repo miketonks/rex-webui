@@ -1,7 +1,12 @@
 
+2013-03-07
+   - Move SampleRexfile to installable location
+   - If no config file found (i.e. on first run / testing) copy template config and SampleRexfile to current dir from installation dir
+
 2013-03-01
   - Final tweaks for 0.01 release
   - Move webui.conf to installable location
+
 2013-02-21
   - Preparing for an 0.01 alpha release
   - Moved public and templates files to installable dir, as per: http://search.cpan.org/~sri/Mojolicious-3.85/lib/Mojolicious/Guides/Cookbook.pod#Making_your_application_installable
