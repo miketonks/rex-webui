@@ -3,9 +3,6 @@ use Test::More tests => 32;
 use Test::Mojo;
 use File::Copy;
 
-$ENV{MOJO_EXCEPTION_VERBOSE} = 1;
-$ENV{MOJO_USERAGENT_DEBUG} = 1;
-
 # crude attempt to move any working db file out of the way
 # but be warned, running developer tests may whack your local db!
 my $db_file = "webui.db";
@@ -16,6 +13,7 @@ move($db_file, $db_file_backup) if -f $db_file;
 # Allow 302 redirect responses
 my $t = Test::Mojo->new('Rex::WebUI');
 #$t->ua->max_redirects(1);
+
 
 # Test if the HTML login form exists
 $t->get_ok('/dashboard');
@@ -70,7 +68,7 @@ $t->message_like(qr/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}] INFO - DONE\n$/);
 
 $t->finish_ok();
 
-warn "CONTENT: " . $t->tx->res->body;
+#warn "CONTENT: " . $t->tx->res->body;
 
 move($db_file_backup, $db_file) if -f $db_file_backup;
 
