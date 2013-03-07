@@ -23,7 +23,7 @@ requires 'Try::Tiny';
 # Modules required for testing
 test_requires 'Test::More' => 0;
 
-install_script 'bin/rex_webui';
+install_script 'bin/rex-webui';
 
 #manifest_skip;
 
