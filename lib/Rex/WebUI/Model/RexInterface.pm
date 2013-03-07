@@ -125,12 +125,12 @@ sub load_rexfile
   	$rexfile = $self->{rexfile} || "SampleRexfile" unless $rexfile;
 
 
-   $Rex::TaskList::task_list = {};
-   $self->{tasks} = undef;
-   delete $self->{tasks};
+	$Rex::TaskList::task_list = {};
+	$self->{tasks} = undef;
+	delete $self->{tasks};
 
-   $self->{tasklist} = undef;
-   delete $self->{tasklist};
+	$self->{tasklist} = undef;
+	delete $self->{tasklist};
 
 	# Is rexfile already loaded?
 	if (exists $self->{rexfiles}->{$rexfile}) {
@@ -165,14 +165,14 @@ sub load_rexfile
 sub _hacky_do_rexfile
 {
 	my $filename = shift;
-   my $rexfile = eval { local(@ARGV, $/) = ($filename); <>; };
-   eval "package Rex::CLI; use Rex -base; $rexfile";
+	my $rexfile = eval { local(@ARGV, $/) = ($filename); <>; };
+	eval "package Rex::CLI; use Rex -base; $rexfile";
 
-   if($@) {
-      die("Error loading Rexfile: $@");
-   }
+	if($@) {
+		die("Error loading Rexfile: $@");
+	}
 
-   return $rexfile;
+	return $rexfile;
 }
 
 # I'm getting a weird conflict with Rex::Commands::run_task so I'm renaming this to something more obscure

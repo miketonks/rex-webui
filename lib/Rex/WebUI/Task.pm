@@ -11,12 +11,12 @@ sub view
 {
 	my $self = shift;
 
-   my $id        = $self->param("id");
+	my $id        = $self->param("id");
 	my $task_name = $self->param("name");
 
 	$self->app->log->debug("View task: $task_name");
 
-   my $project = $self->config->{projects}->[$id];
+	my $project = $self->config->{projects}->[$id];
 	$self->rex->load_rexfile($project->{rexfile});
 
 	$self->app->log->debug("Load task: $task_name");
