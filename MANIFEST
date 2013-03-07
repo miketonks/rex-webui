@@ -44,12 +44,15 @@ lib/Rex/WebUI/Task.pm
 lib/Rex/WebUI/templates/dashboard/index.html.ep
 lib/Rex/WebUI/templates/dashboard/view.html.ep
 lib/Rex/WebUI/templates/layouts/default.html.ep
+lib/Rex/WebUI/templates/project/index.html.ep
 lib/Rex/WebUI/templates/task/run.html.ep
 lib/Rex/WebUI/templates/task/view.html.ep
 lib/Rex/WebUI/webui.conf
 Makefile.PL
 MANIFEST			This list of files
 META.yml
+MYMETA.json
+MYMETA.yml
 README.md
 SampleRexfile
 t/01_rex_get_tasklist.t

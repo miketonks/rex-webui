@@ -2,8 +2,8 @@
 .git
 
 # Project files
-.includepath
-.project
+^.includepath
+^.project
 
 # Makemaker generated files and dirs.
 ^MANIFEST\.
