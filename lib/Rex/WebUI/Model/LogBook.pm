@@ -41,8 +41,6 @@ sub add
 
 	my $jobid = $self->dbh_do("insert into logbook (userid, task_name, server, statusid, jobid) values (?, ?, ?, ?, ?)", $data->{userid}, $data->{task_name}, $data->{server}, 0, undef);
 
-warn "JOBID: $jobid";
-
 	$jobid = "TS" . time if !$jobid; # in case db not working, use timestamp as a jobid
 
 	return $jobid;
@@ -51,8 +49,6 @@ warn "JOBID: $jobid";
 sub update_status
 {
 	my ($self, $jobid, $statusid) = @_;
-
-warn "update status: $jobid, $statusid";
 
 	return $self->dbh_do("update logbook set statusid = ? where jobid = ?", $statusid, $jobid);
 }
