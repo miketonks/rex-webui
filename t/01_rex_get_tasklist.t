@@ -7,7 +7,7 @@ use Test::More tests => 6;
 use Rex -base;
 #use Rex::TaskList;
 
-my $rexfile = 'SampleRexfile';
+my $rexfile = 'lib/Rex/WebUI/SampleRexfile';
 
 ok(-e $rexfile, "SampleRexfile found");
 
