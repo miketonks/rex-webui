@@ -40,6 +40,7 @@ lib/Rex/WebUI/public/js/jquery-1.8.2.min.js
 lib/Rex/WebUI/public/js/jquery-ui-1.9.0.min.js
 lib/Rex/WebUI/public/js/jquery.layout.min.js
 lib/Rex/WebUI/public/js/notification_message.js
+lib/Rex/WebUI/SampleRexfile
 lib/Rex/WebUI/Task.pm
 lib/Rex/WebUI/templates/dashboard/index.html.ep
 lib/Rex/WebUI/templates/dashboard/view.html.ep
@@ -54,6 +55,5 @@ META.yml
 MYMETA.json
 MYMETA.yml
 README.md
-SampleRexfile
 t/01_rex_get_tasklist.t
 t/02_web_app.t

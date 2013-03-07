@@ -17,6 +17,7 @@ use DBIx::Foo qw(:all);
 use Data::Dumper;
 
 use File::Basename 'dirname';
+use File::Copy;
 use File::Spec::Functions 'catdir';
 
 our $VERSION = '1.0';
@@ -111,8 +112,8 @@ sub _locate_config_file
 {
 	my $self = shift;
 
-	# check optional locations for config file, inc current directory and finally the mojo home dir
-	my @cfg = ("/etc/rex/webui.conf", "/usr/local/etc/rex/webui.conf", abs_path("webui.conf"), abs_path($self->home->rel_file('webui.conf')));
+	# check optional locations for config file, inc current directory
+	my @cfg = ("/etc/rex/webui.conf", "/usr/local/etc/rex/webui.conf", abs_path("webui.conf"));
 
 	my $cfg;
 	for my $file (@cfg) {
@@ -121,6 +122,13 @@ sub _locate_config_file
 			last;
 		}
 	}
+
+	# finally if no config file is found, copy the template and the SampleRexfile from the mojo home dir
+	foreach my $file (qw(webui.conf SampleRexfile)) {
+		copy(abs_path($self->home->rel_file($file)), abs_path($file)) or die "No config file found, and unable to copy $file to current directory";
+	}
+
+	return abs_path("webui.conf");
 }
 
 1;

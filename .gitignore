@@ -1,5 +1,6 @@
 webui.db
-SampleRexfile2
+webui.conf
+SampleRexfile*
 .project
 .includepath
 blib/
