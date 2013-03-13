@@ -1,0 +1,46 @@
+% if(! param("nolayout")) {
+%    layout 'default';
+% }
+
+% my $title = $user->{userid} ? 'Edit User Account' : 'Create New User Account';
+
+<h1>Admin</h1>
+
+<div id="user_info">
+   <h2><%= $title %></h2>
+
+   <form name="user" id="user_form" method="post" action="/admin/user_process">
+
+   <input type="hidden" name="nolayout" value="<%= param("nolayout") %>" />
+   <input type="hidden" name="userid" value="<%= $user->{userid} || 'new' %>" />
+
+   <table style="width: 60%; text-align: left;">
+      <tr>
+         <th width="30%;">Username</th>
+         <td><input type="text" id="username" name="username" maxlength="20" value="<%= $user->{username} %>" /><span id="username_error" class="form_error" /></td>
+      </tr>
+      <tr>
+         <th width="30%;">Full Name</th>
+         <td><input type="text" id="fullname" name="fullname" maxlength="60" value="<%= $user->{fullname} %>" /><span id="fullname_error" class="form_error" /></td>
+      </tr>
+      <tr>
+         <th width="30%;">Password</th>
+         <td><input id="password" name="password" type="password"  maxlength="20" /><span id="password_error" class="form_error" /></td>
+      </tr>
+      <tr>
+         <th width="30%;">Confirm Password</th>
+         <td><input id="confirm_password" name="confirm_password" type="password" maxlength="20" /><span id="confirm_password_error" class="form_error" /></td>
+      </tr>
+% if ($admin) {
+      <tr>
+         <th width="30%;">Admin Rights?</th>
+         <td><input id="admin" name="admin" type="checkbox" value="1" <% if ($user->{admin}) { %> checked="checked" <% } %>/></td>
+      </tr>
+% }
+   </table>
+
+   <br />
+   <input type="submit" onclick="return ajax_form('#user_form');" />
+   </form>
+
+</div>

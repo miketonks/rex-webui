@@ -30,6 +30,17 @@
 % $id++;
 % }
      </ul>
+
+      <br />
+      <br />
+% if (config->{enable_authentication}) {
+% if ($user->{admin}) {
+      <p><a href="/admin">Admin</a></p>
+% } else {
+      <p><a href="/admin/user/<%= $user->{userid} %>"><%= $user->{username} %></a></p>
+% }
+      <p><a href="/logout">Logout</a></p>
+% }
   </div>
 
   <div id="notification_area" class="ui-layout-south">

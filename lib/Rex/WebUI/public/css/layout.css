@@ -47,7 +47,7 @@ div.info_table_header {
 }
 
 span.info_table_header {
-   background-color: #4a8561;   
+   background-color: #4a8561;
    padding: 5px;
 }
 
@@ -83,4 +83,10 @@ a:link,
 a:visited,
 a:active {
    color: #4a8561;
+}
+
+.form_error {
+	color: red;
+	display: none;
+	padding-left: 2em;
 }

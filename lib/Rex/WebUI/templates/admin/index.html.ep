@@ -1,0 +1,28 @@
+% if(! param("nolayout")) {
+%    layout 'default';
+% }
+
+
+<h1>Admin</h1>
+
+<div id="user_info">
+   <h2>User Accounts</h2>
+
+   <table style="width: 80%; text-align: left;">
+      <tr style="background-color: #eee;">
+         <th>User Name</th>
+         <th>Full Name</th>
+         <th>Admin Rights</th>
+      </tr>
+   % for my $user (@$users) {
+      <tr>
+         <td width="30%;"><a href="/admin/user/<%= $user->{userid} %>"><%= $user->{username} %></a></td>
+         <td><%= $user->{fullname} %></td>
+         <td><%= $user->{admin} ? 'Yes' : 'No' %>
+      </tr>
+   % }
+   </table>
+
+	<br />
+   <a href="/admin/user/new">Add User Account</a>
+</div>

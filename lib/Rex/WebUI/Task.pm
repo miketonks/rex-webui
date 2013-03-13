@@ -60,7 +60,7 @@ sub run
 	my $jobid = $self->logbook->add({
 		task_name => $task_name,
 		server    => $servers,
-		userid    => 1,
+		userid    => $self->current_user->{userid},
 	});
 
 	$self->app->log->debug("Got jobid: $jobid");

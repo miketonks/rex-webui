@@ -1,0 +1,39 @@
+
+<html>
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8">
+   <title>Rex - WebUI</title>
+   <link rel="stylesheet" href="/css/layout.css" type="text/css" media="screen" charset="utf-8" />
+   <link rel="stylesheet" href="/css/jquery-layout-default.css" type="text/css" media="screen" charset="utf-8" />
+</head>
+<body>
+
+<div id="content_area" style="padding: 20px;">
+
+<h1>Login</h1>
+
+<div id="login_form" style="width: 50%; border: 1px solid #333; padding: 20px; background: white;">
+   <h2>Enter your login details</h2>
+
+   <form name="login" method="post" action="/login_process">
+
+   <table style="width: 60%; text-align: left;">
+      <tr>
+         <th width="30%;">User Name</th>
+         <td><input id="username" name="username" type="text" maxlength="30" /></td>
+      </tr>
+      <tr>
+         <th width="30%;">Password</th>
+         <td><input id="password" name="password" type="password" maxlength="30" /></td>
+      </tr>
+   </table>
+
+   <br />
+   <input type="submit" />
+   </form>
+
+</div>
+</div>
+
+</body>
+</html>

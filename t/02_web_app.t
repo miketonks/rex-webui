@@ -3,6 +3,10 @@ use Test::More tests => 32;
 use Test::Mojo;
 use File::Copy;
 
+use Rex::WebUI;
+
+$Rex::WebUI::TEST_CONFIG_OPTIONS = {enable_authentication => 0};
+
 # crude attempt to move any working db file out of the way
 # but be warned, running developer tests may whack your local db!
 my $db_file = "webui.db";

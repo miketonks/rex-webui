@@ -8,13 +8,13 @@ use Data::Dumper;
 sub index {
    my $self = shift;
 
-warn "index ***********************************************";
-
    $self->stash(name => $self->config->{name});
    $self->stash(notification_message => 'Starting Up');
 
    $self->stash(recent_tasks  => $self->logbook->recent_tasks);
    $self->stash(running_tasks => $self->logbook->running_tasks);
+
+   $self->stash(user => $self->current_user);
 
    $self->render;
 }
