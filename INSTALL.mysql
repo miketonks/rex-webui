@@ -1,0 +1,49 @@
+
+# SETUP INSTRUCTIONS TO USE MySQL BACKEND
+# ---------------------------------------
+#
+# in webui.conf
+# #db_config 			=> [ dsn => 'dbi:mysql:rex_webui:localhost', username => 'rex_webui', password => 'password' ],
+#
+# Then in your MySQL Client, run the following to create the database and tables
+
+
+create database rex_webui default character set utf8;
+
+use rex_webui;
+
+create table users (
+  userid INTEGER PRIMARY KEY AUTO_INCREMENT,
+  username VARCHAR(20) NOT NULL,
+  fullname VARCHAR(50),
+  password VARCHAR(50) NOT NULL,
+  admin TINYINT DEFAULT 0
+);
+
+insert into users (userid, username, fullname, password, admin) values (1, 'admin', 'Admin User', password('admin'), 1);
+
+create table status (
+  statusid INTEGER PRIMARY KEY AUTO_INCREMENT,
+  status VARCHAR(20)
+);
+
+insert into status (statusid, status) values (0, 'Starting');
+update status set statusid = 0;
+
+insert into status (statusid, status) values (1, 'Running');
+insert into status (statusid, status) values (2, 'Completed');
+insert into status (statusid, status) values (3, 'Died');
+
+create table logbook (
+  jobid INTEGER PRIMARY KEY AUTO_INCREMENT,
+  userid INT NOT NULL,
+  task_name VARCHAR(100) NOT NULL,
+  server VARCHAR(100) NOT NULL,
+  statusid INT NOT NULL,
+  pid INT,
+  CONSTRAINT fk_logbook_userid FOREIGN KEY (userid) REFERENCES users (userid),
+  CONSTRAINT fk_logbook_statusid FOREIGN KEY (statusid) REFERENCES status (statusid)
+);
+
+GRANT SELECT, INSERT, UPDATE, DELETE on rex_webui.* to 'rex_webui'@'localhost' identified by 'password';
+
