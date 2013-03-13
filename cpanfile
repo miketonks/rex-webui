@@ -5,6 +5,7 @@ requires 'Mojolicious', 3.11;
 requires 'Rex', 0.39;
 
 requires 'Mojolicious::Plugin::Database';
+requires 'Mojolicious::Plugin::Validator';
 
 requires 'Data::Dumper';
 requires 'DBD::SQLite';
