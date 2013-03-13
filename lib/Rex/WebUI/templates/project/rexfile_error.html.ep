@@ -1,0 +1,11 @@
+% if(! param("nolayout")) {
+%    layout 'default';
+% }
+
+
+<h1>Error Loading Rexfile</h1>
+
+<div id="rexfile_info">
+   <%= $error %>
+</div>
+
