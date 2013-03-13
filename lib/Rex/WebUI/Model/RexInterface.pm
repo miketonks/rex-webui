@@ -144,7 +144,7 @@ sub load_rexfile
 	}
 
 	# workaround namespace issues - Rex::CLI is handled already for this issue
-	if (defined _hacky_do_rexfile($rexfile)) {
+	if (defined $self->_hacky_do_rexfile($rexfile)) {
 
 		warn "Loaded Rexfile: $rexfile";
 
@@ -156,7 +156,7 @@ sub load_rexfile
 	}
 	else {
 
-		warn "Error loading Rexfile: $rexfile - $@";
+		warn "Error loading Rexfile: $rexfile - $self->{_error_message_}";
 
 		return $self->{rexfile} = undef;
 	}
@@ -164,12 +164,15 @@ sub load_rexfile
 
 sub _hacky_do_rexfile
 {
+	my $self = shift;
 	my $filename = shift;
 	my $rexfile = eval { local(@ARGV, $/) = ($filename); <>; };
-	eval "package Rex::CLI; use Rex -base; $rexfile";
+	eval "package Rex::CLI; use Rex -base; no strict; $rexfile; use strict;";
 
 	if($@) {
-		die("Error loading Rexfile: $@");
+		warn "Error loading Rexfile: $@";
+		$self->{_error_message_} = $@;
+		return undef;
 	}
 
 	return $rexfile;
@@ -205,6 +208,12 @@ sub options
 	$Rex::Cache::USE    = $opts->{cache} if exists $opts->{cache};
 }
 
+sub error_message
+{
+	my $self = shift;
+
+	return $self->{_error_message_} || '';
+}
 
 1;
 
