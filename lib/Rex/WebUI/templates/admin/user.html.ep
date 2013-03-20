@@ -40,7 +40,7 @@
    </table>
 
    <br />
-   <input type="submit" onclick="return ajax_form('#user_form');" />
+   <input type="submit" value="Submit" />
    </form>
 
 </div>
