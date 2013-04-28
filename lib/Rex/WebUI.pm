@@ -261,11 +261,12 @@ A small SQLite db is used to store the history.
         },
      ],
      db_config 			=> [ dsn => 'dbi:SQLite:dbname=webui.db', username => '', password => '' ],
+     enable_authentication => 0, # set to 1 to enable authentication, 0 to disable
   };
 
 =head1 SampleRexfile
 
- # Sample Rexfile
+  # Sample Rexfile
 
   desc "Show Unix version";
   task uname => sub {
@@ -284,5 +285,41 @@ A small SQLite db is used to store the history.
 
       return $uptime;
   };
+
+=head1 Enabling User Authentication
+
+Optionally User Authentication can be enabled, requiring user to log in with a password before accessing the web application.
+
+User details are stored in the database 'users' table and the is one default user 'admin' with the password 'admin'.  You can change this and add more users via the web interface, by clicking on the 'Admin' link in the left panel, underneath the project links.
+
+
+There are two config file options to assist with this:
+
+  enable_authentication => 0, # set to 1 to enable authentication, 0 to disable
+  admin_password => 'admin',
+
+
+=head2 enable_authentication
+
+Boolean value (0 or 1) to turn authentication on or off.
+
+
+=head2 admin_password
+
+A hard coded password can be set for 'admin' user, by specifying it here.
+
+
+=head1 MySQL as a Backend
+
+Experimentally, MySQL can be used as a back end.  So far, apart from the automatic database setup, everything works fine on either db.  See INSTALL.mysql for details.
+
+
+=head1 A Note about Version Upgrades and Database Schemas
+
+Currently software is at an early stage and may be subject to change.  If you upgrade from one release to another it may be necessary to dump your database and recreate the database from scratch.  If that's the case and you don't want to loose any user settings, you'll might have to manage the upgrade of the schema youself.  I'll try to provide upgrade scripts, but no promises.  See the Changelog / Release Notes for details.
+
+If you're using the default SQLite database, the easiest thing to do is to delete your webui.db file and let rex-webui create a new one for you, which it does anuomatically on first run.  This will always produce the latest schema.
+
+
 
 =cut
